@@ -2,6 +2,7 @@ import sqlite3
 from sqlite3 import Error
 
 
+# DATABASE_MEMORY = ':memory:'
 DATABASE_MEMORY = 'python-methods.db'
 
 
@@ -9,6 +10,7 @@ def run_query(create_table_sql):
     try:
         cursor = conn.cursor()
         cursor.execute(create_table_sql)
+        return cursor
     except Error as e:
         print(e)
 
@@ -25,22 +27,21 @@ def select_albums(where=None):
         query = '''SELECT * FROM "albums" WHERE {}'''.format(where)
     else:
         query = '''SELECT * FROM "albums"'''
-    cursor = conn.cursor()
-    cursor.execute(query)
+    cursor = run_query(query)
     return cursor.fetchall()
 
 
 def main():
     run_query('''
-    CREATE TABLE IF NOT EXISTS "albums"
-    (
-        [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-        [Artist] NVARCHAR(120),
-        [Album] NVARCHAR(120) NOT NULL,
-        [Genre] NVARCHAR(120) DEFAULT 'Rock',
-        [year] INTEGER
-    )
-    ''')
+        CREATE TABLE IF NOT EXISTS "albums"
+        (
+            [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            [Artist] NVARCHAR(120),
+            [Album] NVARCHAR(120) NOT NULL,
+            [Genre] NVARCHAR(120) DEFAULT 'Rock',
+            [year] INTEGER
+        )
+        ''')
 
     insert_album('AC/DC', 'For Those About To Rock We Salute You', 'Rock', 1981)
     insert_album('AC/DC', 'Let There Be Rock', 'Rock', 1977)
@@ -51,6 +52,11 @@ def main():
 
     rows = select_albums()
     print('Results from select all albums:')
+    for row in rows:
+        print(row)
+
+    rows = select_albums('"year" BETWEEN 1970 AND 1978')
+    print('Results from select albums between 1970 and 1978:')
     for row in rows:
         print(row)
 

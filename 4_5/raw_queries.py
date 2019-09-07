@@ -69,11 +69,11 @@ cursor.execute('''UPDATE "albums" SET "year"=1979
 #  SELECT between
 cursor.execute('''SELECT * FROM "albums" WHERE "year" IN (1977, 1980, 1981)''')
 print('Results from select * year 1977, 1980, 1981:')
-for row in cursor.fetchall():
-    print(row)
+print(cursor.fetchone())
+
 cursor.execute('''SELECT * FROM "albums" WHERE "year" BETWEEN 1970 AND 1978''')
 print('Results from select * year between 1970 and 1978')
-for row in cursor.fetchall():
+for row in cursor.fetchmany(2):
     print(row)
 
 
